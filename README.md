@@ -16,9 +16,9 @@ python3 -m venv virtualenv
 ```
 source virtualenv/bin/activate
 ```
-- Install dependencies
+- Install dependencies for training
 ```
-pip install -r requirements.txt
+pip install -r training_requirements.txt
 ```
 - Deacivate virtual enviroment
 ```
@@ -69,7 +69,6 @@ python3 train-model.py -c forest > outputs/forest-output.txt
 ```
 python3 train-model.py -c linear_svm > outputs/linear_svm-output.txt
 ```
-
 
 ## Train Unsupervised Machine Learning Algorithms 
 
