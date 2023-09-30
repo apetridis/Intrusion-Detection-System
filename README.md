@@ -20,6 +20,10 @@ source virtualenv/bin/activate
 ```
 pip install -r training_requirements.txt
 ```
+- Install dependencies for detection
+```
+pip install -r detection_requirements.txt
+```
 - Deacivate virtual enviroment
 ```
 deactivate
