@@ -32,22 +32,20 @@ cd flow_based/src/
 sudo virtualenv/bin/python3 main.py -m `model_name`
 ```
 
-## Flow Based
-
-### Training Supervised Machine Learning Algorithms 
+## Train Supervised Machine Learning Algorithms 
 
 Generated trained classifiers with the following commands:
 - Change to data directory
 ```
 cd flow_based/data/supervised
 ```
-- Change to preprocessed or processed directory 
+- Change to `all features` or `selected features` 
 ```
-cd models_no-preprocess
+cd all_features
 ```
 or
 ```
-cd models_preprocess
+cd selected_features
 ```
 - Train models
 ```
@@ -72,3 +70,32 @@ python3 train-model.py -c forest > outputs/forest-output.txt
 python3 train-model.py -c linear_svm > outputs/linear_svm-output.txt
 ```
 
+
+## Train Unsupervised Machine Learning Algorithms 
+
+Generated trained classifiers with the following commands:
+- Change to data directory
+```
+cd flow_based/data/unsupervised
+```
+- Change to `all features` or `selected features` 
+```
+cd all_features
+```
+or
+```
+cd selected_features
+```
+- Train models
+```
+python3 train-model.py -c iforest > outputs/iforest.txt
+```
+```
+python3 train-model.py -c oneclass_svm > outputs/oneclass_svm.txt
+```
+```
+python3 train-model.py -c k_means > outputs/k_means.txt
+```
+```
+python3 train-model.py -c abod > outputs/abod.txt
+```
