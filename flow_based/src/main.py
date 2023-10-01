@@ -1,5 +1,4 @@
 import argparse
-import netifaces
 from helpers import capture_packets, select_network_interface
 
 def main():
