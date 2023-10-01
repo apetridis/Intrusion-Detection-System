@@ -9,6 +9,7 @@ import netifaces
 import time
 import datetime
 import psutil
+from prettytable import PrettyTable
 
 # Filter out FutureWarnings with the specific message
 import warnings
@@ -100,11 +101,13 @@ def capture_packets(network_interface, model_name):
     filtered_packet_count = 0
     flow_creation_count = 0
     sum_of_time = 0
-    malicious_flows = 0
+    malicious_flows = 0 
     resource_utilization = []
     start_time = time.time()
     current_date = datetime.datetime.now().strftime("%d-%m-%y_%H-%M-%S")
     report_file_name = f"report_{current_date}.log"
+    display = PrettyTable()
+    display.field_names = ["Source IP", "Source port", "Destination IP", "Destination port", "Protocol"]
 
     # Initialize packet capturer
     snaplen = 65536  # Maximum number of bytes to capture per packet
@@ -113,7 +116,12 @@ def capture_packets(network_interface, model_name):
     capture = pcapy.open_live(network_interface, snaplen, promiscuous, timeout)
 
     # Capture packets
+    print("\033c", end="") # Clear the screen
+    print(f"Capturing packets on {network_interface}")
+    print(f"Machine learning model `{model_name}` has predicted the following flows as Malicious")
+    print(display)
     print("Press Ctrl-C to terminate capturing packets.")
+    print("Only TCP and UDP packets are captured.")
     try:
         while True:
             # Capture packet
@@ -123,22 +131,14 @@ def capture_packets(network_interface, model_name):
             # Check if the packet has a meaning to be handled
             eth = dpkt.ethernet.Ethernet(buf)
             if not isinstance(eth.data, dpkt.ip.IP):
-                print("Only TCP and UDP packets are captured.")
-                print('Non IP Packet type not supported %s.\n' % eth.data.__class__.__name__)
                 continue
             l3 = eth.data
             if isinstance(l3.data, dpkt.icmp.ICMP):
-                print("Only TCP and UDP packets are captured.")
-                print("ICMP Packet disarded.")
                 continue
             elif isinstance(l3.data, dpkt.igmp.IGMP):
-                print("Only TCP and UDP packets are captured.")
-                print("IGMP Packet disarded.")
                 continue
             l4 = l3.data
             if not isinstance(l4, dpkt.tcp.TCP) and not isinstance(l4, dpkt.udp.UDP):
-                print("Only TCP and UDP packets are captured.")
-                print("Unknown Transport Layer.")
                 continue
 
             if isinstance(l4, dpkt.tcp.TCP):
@@ -163,6 +163,18 @@ def capture_packets(network_interface, model_name):
             if not_exist:
                 flow_creation_count += 1
                 if is_attack:
+                    parts = flow_name.split('_')
+                    data = [parts[0], parts[2], parts[1], parts[3], parts[4]]
+                    display.add_row(data)
+                    # Display only 10 latest malicious flows
+                    if len(display._rows) > 10:
+                        display.del_row(0) 
+                    print("\033c", end="") # Clear the screen
+                    print(f"Capturing packets on {network_interface}")
+                    print(f"Machine learning model `{model_name}` has predicted the following flows as Malicious")
+                    print(display)
+                    print("Press Ctrl-C to terminate capturing packets.")
+                    print("Only TCP and UDP packets are captured.")
                     malicious_flows += 1
             sum_of_time += time_taken
 
@@ -329,12 +341,7 @@ def analyze_flow(flow_name, model_name):
     flow_df = uniFlow2df(uniflow)  
 
     loaded_model = joblib.load(f"../data/supervised/all_features/models/{model_name}.pkl")
-    is_attack = loaded_model.predict(flow_df)
+    is_attack = loaded_model.predict(flow_df)  
 
-    print(f"Flow {flow_name}")
-    if is_attack == 1:
-        print("Is an attack")
-    else:
-        print("It's normal")
     return is_attack
 
