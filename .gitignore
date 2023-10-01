@@ -8,3 +8,4 @@ flow_based/data/unsupervised/all_features/outputs
 flow_based/data/unsupervised/selected_features/models
 flow_based/data/unsupervised/selected_features/outputs
 plots.ipynb
+flow_based/src/reports

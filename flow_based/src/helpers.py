@@ -6,7 +6,9 @@ import numpy as np
 import joblib
 import pandas as pd
 import netifaces
-
+import time
+import datetime
+import psutil
 
 # Filter out FutureWarnings with the specific message
 import warnings
@@ -93,7 +95,17 @@ def inet_to_str(inet):
 
 def capture_packets(network_interface, model_name):
     """This function is responsible for capturing the packets on the specific network interface"""
-    
+    start_of_time = time.time()
+    packet_count = 0
+    filtered_packet_count = 0
+    flow_creation_count = 0
+    sum_of_time = 0
+    malicious_flows = 0
+    resource_utilization = []
+    start_time = time.time()
+    current_date = datetime.datetime.now().strftime("%d-%m-%y_%H-%M-%S")
+    report_file_name = f"report_{current_date}.log"
+
     # Initialize packet capturer
     snaplen = 65536  # Maximum number of bytes to capture per packet
     promiscuous = True  # Capture in promiscuous mode
@@ -106,6 +118,7 @@ def capture_packets(network_interface, model_name):
         while True:
             # Capture packet
             (header, buf) = capture.next()
+            packet_count += 1
 
             # Check if the packet has a meaning to be handled
             eth = dpkt.ethernet.Ethernet(buf)
@@ -142,14 +155,50 @@ def capture_packets(network_interface, model_name):
                 urg_flag = False
                 fin_flag = False
             
+            filtered_packet_count += 1
             flow_name = "_".join(str(v) for v in (inet_to_str(l3.src), inet_to_str(l3.dst), l4.sport, l4.dport, proto))
             flow_data = ((rst_flag, psh_flag, urg_flag, fin_flag), header.getts(), len(eth.data))
 
-            update_flow(flow_name, flow_data, model_name)
+            not_exist, time_taken, is_attack = update_flow(flow_name, flow_data, model_name)
+            if not_exist:
+                flow_creation_count += 1
+                if is_attack:
+                    malicious_flows += 1
+            sum_of_time += time_taken
 
     except KeyboardInterrupt:
                 # Ctrl-C (EOF) was pressed, so exit the loop
                 print("\nTerminating...")
+    
+    # Calculate packet capture rate
+    elapsed_time = time.time() - start_time
+    packet_capture_rate = packet_count / elapsed_time
+
+    # Resource utilization metrics
+    resource_utilization.append({
+        "CPU Usage (%)": psutil.cpu_percent(),
+        "Memory Usage (%)": psutil.virtual_memory().percent
+    })
+
+    end_of_time = time.time() - start_of_time
+    # Store the report in a file
+    with open(f"reports/{report_file_name}", 'w') as file:
+        file.write("###### Report for Intrusion Detection System ######\n")
+        file.write("###################################################\n")
+        file.write(f"Starting date and time: {datetime.datetime.now().strftime('%d-%m-%y: %H:%M:%S')}\n")
+        file.write(f"Duration: {end_of_time:.4f} seconds\n")
+        file.write(f"Packets captured: {packet_count}\n")
+        file.write(f"Filtered packets: {filtered_packet_count}\n")
+        file.write(f"Packets captured rate: {packet_capture_rate:.4f} packets per second\n")
+        file.write("###################################################\n")
+        file.write(f"Flows detected: {flow_creation_count}\n")
+        file.write(f"Average time to analyse flow: {(sum_of_time/filtered_packet_count):.5f}\n")
+        file.write(str(resource_utilization) + "\n")
+        file.write("###################################################\n")
+        file.write(f"Malicious flows detected: {malicious_flows}\n")
+        file.write(f"Machine learning model used: {model_name}\n")
+        file.write("###################################################\n")
+
 
 def update_flow(flow_name, flow_data, model_name):
     """This function is responsible for creating or updating each flow with the new packets
@@ -157,13 +206,24 @@ def update_flow(flow_name, flow_data, model_name):
             flow_name: string like the following ipsrc_ipdst_portsrc_portdst_protocol
             flow_data: turple that contains ((rst_flag, psh_flag, urg_flag, fin_flag), timestamp, ip_len)
                 timestamp is a tuple with two elements: the number of seconds since the Epoch, and the amount of microseconds past the current second.
+        Return return_val, time_to_analyse_flow, is_attack:
+            return_val:
+                1: if the flow is a new one (does not exist on the active_flows)
+                0: if the flow is an old one (exist on the active_flows)
+            time_to_analyse_flow:
+                Time that was needed to analyse the flow
+            is_attack:
+                0: if it's not an attack
+                1: if it's an attack
     """
     # Create the flow if it does not exists
     if flow_name not in active_flows:
         active_flows[flow_name] = []
         time_diff = -1
+        return_val = 1
     else: # Find the time difference between the current and the last packet of the flow
         time_diff = time_tuple_to_float(flow_data[1]) - time_tuple_to_float(active_flows[flow_name][-1][1])
+        return_val = 0
         
     proto = flow_name[-3:]
     if proto == 'TCP': # TCP packet analysis
@@ -171,22 +231,31 @@ def update_flow(flow_name, flow_data, model_name):
         if (flow_data[0][3] != 0) or (time_diff > timeout_limit):
             # Update, analyze and delete the flow
             active_flows[flow_name].append(flow_data)
-            analyze_flow(flow_name, model_name)     
+            start_time = time.time()
+            is_attack = analyze_flow(flow_name, model_name)     
+            time_to_analyse_flow = time.time() - start_time
             del active_flows[flow_name] 
         else: 
             # Update and analyze the flow
             active_flows[flow_name].append(flow_data)
-            analyze_flow(flow_name, model_name)  
+            start_time = time.time()
+            is_attack = analyze_flow(flow_name, model_name)     
+            time_to_analyse_flow = time.time() - start_time  
     elif proto == 'UDP': # UDP packet analysis
         if time_diff > timeout_limit:
             # Update, analyze and delete the flow
             active_flows[flow_name].append(flow_data)
-            analyze_flow(flow_name, model_name)     
+            start_time = time.time()
+            is_attack = analyze_flow(flow_name, model_name)     
+            time_to_analyse_flow = time.time() - start_time     
             del active_flows[flow_name]  
         else:
             # Update and analyze the flow
             active_flows[flow_name].append(flow_data)
-            analyze_flow(flow_name, model_name)
+            start_time = time.time()
+            is_attack = analyze_flow(flow_name, model_name)     
+            time_to_analyse_flow = time.time() - start_time
+    return return_val, time_to_analyse_flow, is_attack
 
 
 def analyze_flow(flow_name, model_name):
@@ -195,6 +264,9 @@ def analyze_flow(flow_name, model_name):
         ['num_pkts', 'mean_iat', 'std_iat', 'min_iat', 'max_iat', 'mean_pkt_len',
             'num_bytes', 'num_psh_flags', 'num_rst_flags', 'num_urg_flags',
             'std_pkt_len', 'min_pkt_len', 'max_pkt_len', 'is_attack']
+        Returns is_attack:
+            0: is not an attack
+            1: is an attack
     """
     
     num_pkts = len(active_flows[flow_name])
@@ -256,7 +328,7 @@ def analyze_flow(flow_name, model_name):
 
     flow_df = uniFlow2df(uniflow)  
 
-    loaded_model = joblib.load(f"../models/{model_name}.pkl")
+    loaded_model = joblib.load(f"../data/supervised/all_features/models/{model_name}.pkl")
     is_attack = loaded_model.predict(flow_df)
 
     print(f"Flow {flow_name}")
@@ -264,4 +336,5 @@ def analyze_flow(flow_name, model_name):
         print("Is an attack")
     else:
         print("It's normal")
+    return is_attack
 

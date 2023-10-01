@@ -24,6 +24,10 @@ pip install -r training_requirements.txt
 ```
 pip install -r detection_requirements.txt
 ```
+- Create the folder to store the reports
+```
+mkdir flow_based/src/reports
+```
 - Deacivate virtual enviroment
 ```
 deactivate
