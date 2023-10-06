@@ -11,6 +11,8 @@ This repository contains the code and documentation for my thesis project, title
   - [Install python requirements](#install-python-requirements)
   - [Create folders needed](#create-folders-needed)
   - [Train models](#train-models)
+    - [Supervised](#supervised)
+    - [Unsupervised](#unsupervised)
 - [Detection tool](#detection-tool)
   - [Install python requirements](#install-python-requirements-1)
 
@@ -74,7 +76,7 @@ cd all_features
 cd selected_features
 ```
 Use the following commands after the redirection to the specific folders to train the models:
-- Supervised
+#### Supervised
   - Linear model
     ```
     python3 train-model.py -c linear > outputs/linear-output.txt
@@ -103,7 +105,7 @@ Use the following commands after the redirection to the specific folders to trai
     ```
     python3 train-model.py -c linear_svm > outputs/linear_svm-output.txt
     ```
-- Unsupervised
+#### Unsupervised
   - Isolation Forest
     ```
     python3 train-model.py -c iforest > outputs/iforest.txt
