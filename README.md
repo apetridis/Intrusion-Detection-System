@@ -15,6 +15,7 @@ This repository contains the code and documentation for my thesis project, title
     - [Unsupervised](#unsupervised)
 - [Detection tool](#detection-tool)
   - [Install python requirements](#install-python-requirements-1)
+  - [Run tool](#run-tool)
 
 ## Virtual Enviroment Setup
 On a linux-based machine you can replicate the training and detection doing the following:
