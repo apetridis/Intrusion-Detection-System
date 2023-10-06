@@ -12,7 +12,7 @@ This repository contains the code and documentation for my thesis project, title
   - [Create folders needed](#create-folders-needed)
   - [Train models](#train-models)
 - [Detection tool](#detection-tool)
-  - [Install python requirements](#install-python-requirements2)
+  - [Install python requirements](#install-python-requirements-1)
 
 ## Virtual Enviroment Setup
 On a linux-based machine you can replicate the training and detection doing the following:
@@ -76,50 +76,50 @@ cd selected_features
 Use the following commands after the redirection to the specific folders to train the models:
 - Supervised
   - Linear model
-```
-python3 train-model.py -c linear > outputs/linear-output.txt
-```
+    ```
+    python3 train-model.py -c linear > outputs/linear-output.txt
+    ```
   - K-Nearest Neighbour
-```
-python3 train-model.py -c knn > outputs/knn-output.txt
-```
+    ```
+    python3 train-model.py -c knn > outputs/knn-output.txt
+    ```
   - Support Vector Machine with RBF kerner
-```
-python3 train-model.py -c rbf_svm > outputs/rbf_svm-output.txt
-```
+    ```
+    python3 train-model.py -c rbf_svm > outputs/rbf_svm-output.txt
+    ```
   - Gaussiane Nayes Bayes
-```
-python3 train-model.py -c bayes > outputs/bayes-output.txt
-```
+    ```
+    python3 train-model.py -c bayes > outputs/bayes-output.txt
+    ```
   - Decision Tree
-```
-python3 train-model.py -c trees > outputs/trees-output.txt
-```
+    ```
+    python3 train-model.py -c trees > outputs/trees-output.txt
+    ```
   - Random Forest
-```
-python3 train-model.py -c forest > outputs/forest-output.txt
-```
+    ```
+    python3 train-model.py -c forest > outputs/forest-output.txt
+    ```
   - Support Vector Machine with linear kernel
-```
-python3 train-model.py -c linear_svm > outputs/linear_svm-output.txt
-```
+    ```
+    python3 train-model.py -c linear_svm > outputs/linear_svm-output.txt
+    ```
 - Unsupervised
   - Isolation Forest
-```
-python3 train-model.py -c iforest > outputs/iforest.txt
-```
+    ```
+    python3 train-model.py -c iforest > outputs/iforest.txt
+    ```
   - One Class Support Vector Machine
-```
-python3 train-model.py -c oneclass_svm > outputs/oneclass_svm.txt
-```
+    ```
+    python3 train-model.py -c oneclass_svm > outputs/oneclass_svm.txt
+    ```
   - K-Means
-```
-python3 train-model.py -c k_means > outputs/k_means.txt
-```
+    ```
+    python3 train-model.py -c k_means > outputs/k_means.txt
+    ```
   - Angle-Based OD
-```
-python3 train-model.py -c abod > outputs/abod.txt
-```
+    ```
+    python3 train-model.py -c abod > outputs/abod.txt
+    ```
 
 
 ## Detection tool
