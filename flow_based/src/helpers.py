@@ -300,6 +300,7 @@ def analyze_flow(flow_name, model_name):
 
     parts = flow_name.split('_')
     if parts[0] in secure_ips and parts[2] in secure_ips:
+        print("I found a secure connection")
         return 0
     
     
