@@ -10,7 +10,7 @@ import time
 import datetime
 import psutil
 from prettytable import PrettyTable
-
+from keyboard import is_pressed
 from contextlib import redirect_stdout, redirect_stderr
 import io
 
@@ -97,6 +97,14 @@ def inet_to_str(inet):
     except ValueError:
         return socket.inet_ntop(socket.AF_INET6, inet)
 
+def clear_screen(network_interface, model_name, display):
+    print("\033c", end="") # Clear the screen
+    print(f"Capturing packets on {network_interface}")
+    print(f"Press 'r' to clear the table")
+    print(f"Machine learning model `{model_name}` has predicted the following flows as Malicious")
+    print(display)
+    print("Press Ctrl-C to terminate capturing packets.")
+    print("Only TCP and UDP packets are captured.")
 
 def capture_packets(network_interface, model_name):
     """This function is responsible for capturing the packets on the specific network interface"""
@@ -120,14 +128,11 @@ def capture_packets(network_interface, model_name):
     capture = pcapy.open_live(network_interface, snaplen, promiscuous, timeout)
 
     # Capture packets
-    print("\033c", end="") # Clear the screen
-    print(f"Capturing packets on {network_interface}")
-    print(f"Machine learning model `{model_name}` has predicted the following flows as Malicious")
-    print(display)
-    print("Press Ctrl-C to terminate capturing packets.")
-    print("Only TCP and UDP packets are captured.")
+    
     try:
         while True:
+            if is_pressed("r"):
+                display.clear_rows()
             # Capture packet
             (header, buf) = capture.next()
             packet_count += 1
@@ -173,12 +178,7 @@ def capture_packets(network_interface, model_name):
                     # Display only 10 latest malicious flows
                     if len(display._rows) > 10:
                         display.del_row(0) 
-                    print("\033c", end="") # Clear the screen
-                    print(f"Capturing packets on {network_interface}")
-                    print(f"Machine learning model `{model_name}` has predicted the following flows as Malicious")
-                    print(display)
-                    print("Press Ctrl-C to terminate capturing packets.")
-                    print("Only TCP and UDP packets are captured.")
+                    clear_screen(network_interface, model_name, display)
                     malicious_flows += 1
             sum_of_time += time_taken
 
