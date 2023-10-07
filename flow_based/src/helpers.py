@@ -99,9 +99,10 @@ def inet_to_str(inet):
 def clear_screen(network_interface, model_name, display):
     print("\033c", end="") # Clear the screen
     print(f"Capturing packets on {network_interface}")
+    print(f"Press 'r' to clear the table")
     print(f"Machine learning model `{model_name}` has predicted the following flows as Malicious")
     print(display)
-    print("Press Ctrl-C to interrupt capturing packets.")
+    print("Press Ctrl-C to terminate capturing packets.")
     print("Only TCP and UDP packets are captured.")
 
 
@@ -128,38 +129,6 @@ def capture_packets(network_interface, model_name):
 
     # Capture packets
     
-    packet_count, filtered_packet_count, flow_creation_count, malicious_flows, sum_of_time = subcapture(capture, model_name, display, network_interface, packet_count, filtered_packet_count, flow_creation_count, malicious_flows, sum_of_time)
-    
-    # Calculate packet capture rate
-    elapsed_time = time.time() - start_time
-    packet_capture_rate = packet_count / elapsed_time
-
-    # Resource utilization metrics
-    resource_utilization.append({
-        "CPU Usage (%)": psutil.cpu_percent(),
-        "Memory Usage (%)": psutil.virtual_memory().percent
-    })
-
-    end_of_time = time.time() - start_of_time
-    # Store the report in a file
-    with open(f"flow_based/src/reports/{report_file_name}", 'w') as file:
-        file.write("###### Report for Intrusion Detection System ######\n")
-        file.write("###################################################\n")
-        file.write(f"Starting date and time: {datetime.datetime.now().strftime('%d-%m-%y: %H:%M:%S')}\n")
-        file.write(f"Duration: {end_of_time:.4f} seconds\n")
-        file.write(f"Packets captured: {packet_count}\n")
-        file.write(f"Filtered packets: {filtered_packet_count}\n")
-        file.write(f"Packets captured rate: {packet_capture_rate:.4f} packets per second\n")
-        file.write("###################################################\n")
-        file.write(f"Flows detected: {flow_creation_count}\n")
-        file.write(f"Average time to analyse flow: {(sum_of_time/filtered_packet_count):.5f}\n")
-        file.write(str(resource_utilization) + "\n")
-        file.write("###################################################\n")
-        file.write(f"Malicious flows detected: {malicious_flows}\n")
-        file.write(f"Machine learning model used: {model_name}\n")
-        file.write("###################################################\n")
-
-def subcapture(capture, model_name, display, network_interface, packet_count, filtered_packet_count, flow_creation_count, malicious_flows, sum_of_time):
     try:
         while True:
             # Capture packet
@@ -207,7 +176,12 @@ def subcapture(capture, model_name, display, network_interface, packet_count, fi
                     # Display only 10 latest malicious flows
                     if len(display._rows) > 10:
                         display.del_row(0) 
-                    clear_screen(network_interface, model_name, display)
+                    print("\033c", end="") # Clear the screen
+                    print(f"Capturing packets on {network_interface}")
+                    print(f"Machine learning model `{model_name}` has predicted the following flows as Malicious")
+                    print(display)
+                    print("Press Ctrl-C to terminate capturing packets.")
+                    print("Only TCP and UDP packets are captured.")
                     malicious_flows += 1
             sum_of_time += time_taken
 
