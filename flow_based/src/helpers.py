@@ -192,7 +192,7 @@ def capture_packets(network_interface, model_name):
     except KeyboardInterrupt:
         # Ctrl-C (EOF) was pressed
         print("\033c", end="") # Clear the screen
-        q_or_any = input("Press q to quit or any other key to restart capturing")
+        q_or_any = input("Enter q to quit or any other key to restart capturing: ")
         if (q_or_any == 'q'):
             print(f"Generating report to 'flow_based/src/reports/{report_file_name}' and terminating...")
         else:
