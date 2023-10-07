@@ -296,7 +296,7 @@ def analyze_flow(flow_name, model_name):
             1: is an attack
     """
 
-    secure_ips = ['192.168.1.22', '192.168.1.138'] # Broker and phone
+    secure_ips = ['192.168.1.22', '192.168.1.138', '192.168.1.200'] # Broker, phone, linux-pc
 
     parts = flow_name.split('_')
     if (parts[0] and parts[2]) in secure_ips:
