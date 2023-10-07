@@ -295,6 +295,13 @@ def analyze_flow(flow_name, model_name):
             0: is not an attack
             1: is an attack
     """
+
+    secure_ips = ['192.168.1.22', '192.168.1.138'] # Broker and phone
+
+    parts = flow_name.split('_')
+    if (parts[0] and parts[2]) in secure_ips:
+        return 0
+    
     
     num_pkts = len(active_flows[flow_name])
 
