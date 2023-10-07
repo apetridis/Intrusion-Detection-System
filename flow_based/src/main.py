@@ -15,7 +15,5 @@ def main():
     capture_packets(network_interface, model)
 
 if __name__ == "__main__":
-    warnings.filterwarnings("ignore", category=UserWarning, module="sklearn.ensemble._forest")
-    warnings.filterwarnings("ignore", category=InconsistentVersionWarning)
-    warnings.filterwarnings("ignore", category=RuntimeWarning)
+    warnings.filterwarnings("ignore")
     main()
