@@ -104,6 +104,61 @@ def clear_screen(network_interface, model_name, display):
     print("Press Ctrl-C to interrupt capturing packets.")
     print("Only TCP and UDP packets are captured.")
 
+
+def capture_packets(network_interface, model_name):
+    """This function is responsible for capturing the packets on the specific network interface"""
+    start_of_time = time.time()
+    packet_count = 0
+    filtered_packet_count = 0
+    flow_creation_count = 0
+    sum_of_time = 0
+    malicious_flows = 0 
+    resource_utilization = []
+    start_time = time.time()
+    current_date = datetime.datetime.now().strftime("%d-%m-%y_%H-%M-%S")
+    report_file_name = f"report_{current_date}.log"
+    display = PrettyTable()
+    display.field_names = ["Source IP", "Source port", "Destination IP", "Destination port", "Protocol"]
+
+    # Initialize packet capturer
+    snaplen = 65536  # Maximum number of bytes to capture per packet
+    promiscuous = True  # Capture in promiscuous mode
+    timeout = 1000  # Timeout for capturing packets in milliseconds
+    capture = pcapy.open_live(network_interface, snaplen, promiscuous, timeout)
+
+    # Capture packets
+    
+    subcapture(capture, model_name, display, network_interface)
+    
+    # Calculate packet capture rate
+    elapsed_time = time.time() - start_time
+    packet_capture_rate = packet_count / elapsed_time
+
+    # Resource utilization metrics
+    resource_utilization.append({
+        "CPU Usage (%)": psutil.cpu_percent(),
+        "Memory Usage (%)": psutil.virtual_memory().percent
+    })
+
+    end_of_time = time.time() - start_of_time
+    # Store the report in a file
+    with open(f"flow_based/src/reports/{report_file_name}", 'w') as file:
+        file.write("###### Report for Intrusion Detection System ######\n")
+        file.write("###################################################\n")
+        file.write(f"Starting date and time: {datetime.datetime.now().strftime('%d-%m-%y: %H:%M:%S')}\n")
+        file.write(f"Duration: {end_of_time:.4f} seconds\n")
+        file.write(f"Packets captured: {packet_count}\n")
+        file.write(f"Filtered packets: {filtered_packet_count}\n")
+        file.write(f"Packets captured rate: {packet_capture_rate:.4f} packets per second\n")
+        file.write("###################################################\n")
+        file.write(f"Flows detected: {flow_creation_count}\n")
+        file.write(f"Average time to analyse flow: {(sum_of_time/filtered_packet_count):.5f}\n")
+        file.write(str(resource_utilization) + "\n")
+        file.write("###################################################\n")
+        file.write(f"Malicious flows detected: {malicious_flows}\n")
+        file.write(f"Machine learning model used: {model_name}\n")
+        file.write("###################################################\n")
+
 def subcapture(capture, model_name, display, network_interface):
     try:
         while True:
@@ -165,60 +220,6 @@ def subcapture(capture, model_name, display, network_interface):
         else:
             print("\nClearing the table...")
             subcapture(capture, model_name, display, network_interface)
-
-def capture_packets(network_interface, model_name):
-    """This function is responsible for capturing the packets on the specific network interface"""
-    start_of_time = time.time()
-    packet_count = 0
-    filtered_packet_count = 0
-    flow_creation_count = 0
-    sum_of_time = 0
-    malicious_flows = 0 
-    resource_utilization = []
-    start_time = time.time()
-    current_date = datetime.datetime.now().strftime("%d-%m-%y_%H-%M-%S")
-    report_file_name = f"report_{current_date}.log"
-    display = PrettyTable()
-    display.field_names = ["Source IP", "Source port", "Destination IP", "Destination port", "Protocol"]
-
-    # Initialize packet capturer
-    snaplen = 65536  # Maximum number of bytes to capture per packet
-    promiscuous = True  # Capture in promiscuous mode
-    timeout = 1000  # Timeout for capturing packets in milliseconds
-    capture = pcapy.open_live(network_interface, snaplen, promiscuous, timeout)
-
-    # Capture packets
-    
-    subcapture(capture, model_name, display, network_interface)
-    
-    # Calculate packet capture rate
-    elapsed_time = time.time() - start_time
-    packet_capture_rate = packet_count / elapsed_time
-
-    # Resource utilization metrics
-    resource_utilization.append({
-        "CPU Usage (%)": psutil.cpu_percent(),
-        "Memory Usage (%)": psutil.virtual_memory().percent
-    })
-
-    end_of_time = time.time() - start_of_time
-    # Store the report in a file
-    with open(f"flow_based/src/reports/{report_file_name}", 'w') as file:
-        file.write("###### Report for Intrusion Detection System ######\n")
-        file.write("###################################################\n")
-        file.write(f"Starting date and time: {datetime.datetime.now().strftime('%d-%m-%y: %H:%M:%S')}\n")
-        file.write(f"Duration: {end_of_time:.4f} seconds\n")
-        file.write(f"Packets captured: {packet_count}\n")
-        file.write(f"Filtered packets: {filtered_packet_count}\n")
-        file.write(f"Packets captured rate: {packet_capture_rate:.4f} packets per second\n")
-        file.write("###################################################\n")
-        file.write(f"Flows detected: {flow_creation_count}\n")
-        file.write(f"Average time to analyse flow: {(sum_of_time/filtered_packet_count):.5f}\n")
-        file.write(str(resource_utilization) + "\n")
-        file.write("###################################################\n")
-        file.write(f"Malicious flows detected: {malicious_flows}\n")
-        file.write(f"Machine learning model used: {model_name}\n")
-        file.write("###################################################\n")
 
 
 def update_flow(flow_name, flow_data, model_name):
