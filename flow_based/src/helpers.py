@@ -240,7 +240,7 @@ def update_flow(flow_name, flow_data, model_name):
     proto = flow_name[-3:]
     if proto == 'TCP': # TCP packet analysis
         # If package has FIN flag or has excide timeout limit delete from active flows
-        if (flow_data[0][3] != 0) or (time_diff > timeout_limit):
+        if (flow_data[0][2] != 0) or (time_diff > timeout_limit):
             # Update, analyze and delete the flow
             active_flows[flow_name].append(flow_data)
             start_time = time.time()
