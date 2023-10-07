@@ -133,6 +133,7 @@ def capture_packets(network_interface, model_name):
         while True:
             if is_pressed("r"):
                 display.clear_rows()
+                clear_screen(network_interface, model_name, display)
             # Capture packet
             (header, buf) = capture.next()
             packet_count += 1
