@@ -189,7 +189,7 @@ def capture_packets(network_interface, model_name):
 
     # Capture packets
     
-    subcapture()
+    subcapture(capture, model_name, display, network_interface)
     
     # Calculate packet capture rate
     elapsed_time = time.time() - start_time
