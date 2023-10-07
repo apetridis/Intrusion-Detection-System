@@ -159,7 +159,7 @@ def subcapture(capture, model_name, display, network_interface):
     except KeyboardInterrupt:
         # Ctrl-C (EOF) was pressed
         exitornot = input("Press q to exit or any key to reset the table: ")
-        if (exitornot == 'q')
+        if (exitornot == 'q'):
             print("Terminating...")
             return
         else:
