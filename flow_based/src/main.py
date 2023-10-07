@@ -1,6 +1,7 @@
 import argparse
 from helpers import capture_packets, select_network_interface
 import warnings
+from sklearn.exceptions import InconsistentVersionWarning
 
 def main():
     # Choose model to detect from the initial command
@@ -14,5 +15,6 @@ def main():
     capture_packets(network_interface, model)
 
 if __name__ == "__main__":
+    warnings.filterwarnings("ignore", category=InconsistentVersionWarning)
     warnings.filterwarnings("ignore", category=RuntimeWarning)
     main()
