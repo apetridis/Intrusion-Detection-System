@@ -340,7 +340,7 @@ def analyze_flow(flow_name, model_name):
 
     flow_df = uniFlow2df(uniflow)  
 
-    loaded_model = joblib.load(f"../data/supervised/all_features/models/{model_name}.pkl")
+    loaded_model = joblib.load(f"/final_models/{model_name}.pkl")
     is_attack = loaded_model.predict(flow_df)  
 
     return is_attack

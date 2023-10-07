@@ -4,7 +4,7 @@ from helpers import capture_packets, select_network_interface
 def main():
     # Choose model to detect from the initial command
     parser = argparse.ArgumentParser(description="Detect intrusions with machine learning models")
-    parser.add_argument('-m', type=str, required=True, choices=['linear', 'knn', 'rbf_svm', 'bayes', 'trees', 'forest', 'linear_svm'], help='Name of the model')
+    parser.add_argument('-m', type=str, required=True, choices=['knn', 'trees', 'forest', 'linear_svm', 'abod', 'iforest', 'k_means', 'oneclass_svm'], help='Name of the model')
     arg = parser.parse_args()
     model = arg.m
     print("\033c", end="") # Clear the screen
