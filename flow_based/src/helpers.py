@@ -299,11 +299,7 @@ def analyze_flow(flow_name, model_name):
     secure_ips = ['192.168.1.22', '192.168.1.138', '192.168.1.200'] # Broker, phone, linux-pc
 
     parts = flow_name.split('_')
-    print("flow_name:", flow_name)
-    print("parts[0]:", parts[0])
-    print("parts[2]:", parts[2])
-    if parts[0] in secure_ips and parts[2] in secure_ips:
-        print("I found a secure connection")
+    if parts[0] in secure_ips and parts[1] in secure_ips:
         return 0
     
     
