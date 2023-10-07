@@ -13,7 +13,6 @@ from prettytable import PrettyTable
 from contextlib import redirect_stdout, redirect_stderr
 import io
 
-
 # Filter out FutureWarnings with the specific message
 import warnings
 warnings.filterwarnings("ignore", category=FutureWarning, module="sklearn")
@@ -187,14 +186,36 @@ def capture_packets(network_interface, model_name):
 
     except KeyboardInterrupt:
         # Ctrl-C (EOF) was pressed
-        exitornot = input("Press q to exit or any key to reset the table: ")
-        if (exitornot == 'q'):
-            print("Terminating...")
-            return packet_count, filtered_packet_count, flow_creation_count, malicious_flows, sum_of_time
-        else:
-            print("\nClearing the table...")
-            packet_count, filtered_packet_count, flow_creation_count, malicious_flows, sum_of_time = subcapture(capture, model_name, display, network_interface, packet_count, filtered_packet_count, flow_creation_count, malicious_flows, sum_of_time)
+        print("Terminating...")
 
+    # Calculate packet capture rate
+    elapsed_time = time.time() - start_time
+    packet_capture_rate = packet_count / elapsed_time
+
+    # Resource utilization metrics
+    resource_utilization.append({
+        "CPU Usage (%)": psutil.cpu_percent(),
+        "Memory Usage (%)": psutil.virtual_memory().percent
+    })
+
+    end_of_time = time.time() - start_of_time
+    # Store the report in a file
+    with open(f"flow_based/src/reports/{report_file_name}", 'w') as file:
+        file.write("###### Report for Intrusion Detection System ######\n")
+        file.write("###################################################\n")
+        file.write(f"Starting date and time: {datetime.datetime.now().strftime('%d-%m-%y: %H:%M:%S')}\n")
+        file.write(f"Duration: {end_of_time:.4f} seconds\n")
+        file.write(f"Packets captured: {packet_count}\n")
+        file.write(f"Filtered packets: {filtered_packet_count}\n")
+        file.write(f"Packets captured rate: {packet_capture_rate:.4f} packets per second\n")
+        file.write("###################################################\n")
+        file.write(f"Flows detected: {flow_creation_count}\n")
+        file.write(f"Average time to analyse flow: {(sum_of_time/filtered_packet_count):.5f}\n")
+        file.write(str(resource_utilization) + "\n")
+        file.write("###################################################\n")
+        file.write(f"Malicious flows detected: {malicious_flows}\n")
+        file.write(f"Machine learning model used: {model_name}\n")
+        file.write("###################################################\n")
 
 def update_flow(flow_name, flow_data, model_name):
     """This function is responsible for creating or updating each flow with the new packets
@@ -324,13 +345,8 @@ def analyze_flow(flow_name, model_name):
 
     flow_df = uniFlow2df(uniflow)  
 
-    null_output = io.StringIO()
-    with redirect_stdout(null_output), redirect_stderr(null_output):
-        loaded_model = joblib.load(f"flow_based/src/final_models/{model_name}.pkl")
-        is_attack = loaded_model.predict(flow_df)      
-
-    # loaded_model = joblib.load(f"flow_based/src/final_models/{model_name}.pkl")
-    # is_attack = loaded_model.predict(flow_df)  
+    loaded_model = joblib.load(f"flow_based/src/final_models/{model_name}.pkl")
+    is_attack = loaded_model.predict(flow_df)  
 
     return is_attack
 
