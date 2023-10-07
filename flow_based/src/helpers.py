@@ -10,7 +10,6 @@ import time
 import datetime
 import psutil
 from prettytable import PrettyTable
-from keyboard import is_pressed
 from contextlib import redirect_stdout, redirect_stderr
 import io
 
@@ -100,40 +99,14 @@ def inet_to_str(inet):
 def clear_screen(network_interface, model_name, display):
     print("\033c", end="") # Clear the screen
     print(f"Capturing packets on {network_interface}")
-    print(f"Press 'r' to clear the table")
     print(f"Machine learning model `{model_name}` has predicted the following flows as Malicious")
     print(display)
-    print("Press Ctrl-C to terminate capturing packets.")
+    print("Press Ctrl-C to interrupt capturing packets.")
     print("Only TCP and UDP packets are captured.")
 
-def capture_packets(network_interface, model_name):
-    """This function is responsible for capturing the packets on the specific network interface"""
-    start_of_time = time.time()
-    packet_count = 0
-    filtered_packet_count = 0
-    flow_creation_count = 0
-    sum_of_time = 0
-    malicious_flows = 0 
-    resource_utilization = []
-    start_time = time.time()
-    current_date = datetime.datetime.now().strftime("%d-%m-%y_%H-%M-%S")
-    report_file_name = f"report_{current_date}.log"
-    display = PrettyTable()
-    display.field_names = ["Source IP", "Source port", "Destination IP", "Destination port", "Protocol"]
-
-    # Initialize packet capturer
-    snaplen = 65536  # Maximum number of bytes to capture per packet
-    promiscuous = True  # Capture in promiscuous mode
-    timeout = 1000  # Timeout for capturing packets in milliseconds
-    capture = pcapy.open_live(network_interface, snaplen, promiscuous, timeout)
-
-    # Capture packets
-    
+def subcapture(capture, model_name, display, network_interface):
     try:
         while True:
-            if is_pressed("r"):
-                display.clear_rows()
-                clear_screen(network_interface, model_name, display)
             # Capture packet
             (header, buf) = capture.next()
             packet_count += 1
@@ -184,8 +157,39 @@ def capture_packets(network_interface, model_name):
             sum_of_time += time_taken
 
     except KeyboardInterrupt:
-                # Ctrl-C (EOF) was pressed, so exit the loop
-                print("\nTerminating...")
+        # Ctrl-C (EOF) was pressed
+        exitornot = input("Press q to exit or any key to reset the table: ")
+        if (exitornot == 'q')
+            print("Terminating...")
+            return
+        else:
+            print("\nClearing the table...")
+            subcapture(capture, model_name, display, network_interface)
+
+def capture_packets(network_interface, model_name):
+    """This function is responsible for capturing the packets on the specific network interface"""
+    start_of_time = time.time()
+    packet_count = 0
+    filtered_packet_count = 0
+    flow_creation_count = 0
+    sum_of_time = 0
+    malicious_flows = 0 
+    resource_utilization = []
+    start_time = time.time()
+    current_date = datetime.datetime.now().strftime("%d-%m-%y_%H-%M-%S")
+    report_file_name = f"report_{current_date}.log"
+    display = PrettyTable()
+    display.field_names = ["Source IP", "Source port", "Destination IP", "Destination port", "Protocol"]
+
+    # Initialize packet capturer
+    snaplen = 65536  # Maximum number of bytes to capture per packet
+    promiscuous = True  # Capture in promiscuous mode
+    timeout = 1000  # Timeout for capturing packets in milliseconds
+    capture = pcapy.open_live(network_interface, snaplen, promiscuous, timeout)
+
+    # Capture packets
+    
+    subcapture()
     
     # Calculate packet capture rate
     elapsed_time = time.time() - start_time
