@@ -194,7 +194,7 @@ def capture_packets(network_interface, model_name):
 
     end_of_time = time.time() - start_of_time
     # Store the report in a file
-    with open(f"reports/{report_file_name}", 'w') as file:
+    with open(f"flow_based/src/reports/{report_file_name}", 'w') as file:
         file.write("###### Report for Intrusion Detection System ######\n")
         file.write("###################################################\n")
         file.write(f"Starting date and time: {datetime.datetime.now().strftime('%d-%m-%y: %H:%M:%S')}\n")
