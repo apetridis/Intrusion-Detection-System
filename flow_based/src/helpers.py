@@ -194,7 +194,7 @@ def capture_packets(network_interface, model_name):
         print("\033c", end="") # Clear the screen
         q_or_any = input("Enter q to quit or any other key to restart capturing: ")
         if (q_or_any == 'q'):
-            print(f"Generating report to 'flow_based/src/reports/{report_file_name}' and terminating...")
+            print("Terminating...")
         else:
             capture_packets(network_interface, model_name)
 
@@ -226,6 +226,7 @@ def capture_packets(network_interface, model_name):
         file.write(f"Malicious flows detected: {malicious_flows}\n")
         file.write(f"Machine learning model used: {model_name}\n")
         file.write("###################################################\n")
+    print(f"Report generated to 'flow_based/src/reports/{report_file_name}'")
 
 def update_flow(flow_name, flow_data, model_name):
     """This function is responsible for creating or updating each flow with the new packets
