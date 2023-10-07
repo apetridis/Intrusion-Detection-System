@@ -11,6 +11,10 @@ import datetime
 import psutil
 from prettytable import PrettyTable
 
+from contextlib import redirect_stdout, redirect_stderr
+import io
+
+
 # Filter out FutureWarnings with the specific message
 import warnings
 warnings.filterwarnings("ignore", category=FutureWarning, module="sklearn")
@@ -340,8 +344,13 @@ def analyze_flow(flow_name, model_name):
 
     flow_df = uniFlow2df(uniflow)  
 
-    loaded_model = joblib.load(f"flow_based/src/final_models/{model_name}.pkl")
-    is_attack = loaded_model.predict(flow_df)  
+    null_output = io.StringIO()
+    with redirect_stdout(null_output), redirect_stderr(null_output):
+        loaded_model = joblib.load(f"flow_based/src/final_models/{model_name}.pkl")
+        is_attack = loaded_model.predict(flow_df)      
+
+    # loaded_model = joblib.load(f"flow_based/src/final_models/{model_name}.pkl")
+    # is_attack = loaded_model.predict(flow_df)  
 
     return is_attack
 
