@@ -128,7 +128,7 @@ def capture_packets(network_interface, model_name):
 
     # Capture packets
     
-    subcapture(capture, model_name, display, network_interface)
+    packet_count, filtered_packet_count, flow_creation_count, malicious_flows, sum_of_time = subcapture(capture, model_name, display, network_interface, packet_count, filtered_packet_count, flow_creation_count, malicious_flows, sum_of_time)
     
     # Calculate packet capture rate
     elapsed_time = time.time() - start_time
@@ -159,7 +159,7 @@ def capture_packets(network_interface, model_name):
         file.write(f"Machine learning model used: {model_name}\n")
         file.write("###################################################\n")
 
-def subcapture(capture, model_name, display, network_interface):
+def subcapture(capture, model_name, display, network_interface, packet_count, filtered_packet_count, flow_creation_count, malicious_flows, sum_of_time):
     try:
         while True:
             # Capture packet
@@ -216,10 +216,10 @@ def subcapture(capture, model_name, display, network_interface):
         exitornot = input("Press q to exit or any key to reset the table: ")
         if (exitornot == 'q'):
             print("Terminating...")
-            return
+            return packet_count, filtered_packet_count, flow_creation_count, malicious_flows, sum_of_time
         else:
             print("\nClearing the table...")
-            subcapture(capture, model_name, display, network_interface)
+            packet_count, filtered_packet_count, flow_creation_count, malicious_flows, sum_of_time = subcapture(capture, model_name, display, network_interface, packet_count, filtered_packet_count, flow_creation_count, malicious_flows, sum_of_time)
 
 
 def update_flow(flow_name, flow_data, model_name):
