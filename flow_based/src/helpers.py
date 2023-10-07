@@ -128,14 +128,13 @@ def capture_packets(network_interface, model_name):
 
     # Capture packets
     try:
+        print("\033c", end="") # Clear the screen
+        print(f"Capturing packets on {network_interface}")
+        print(f"Machine learning model `{model_name}` has predicted the following flows as Malicious")
+        print(display)
+        print("Press Ctrl-C to terminate capturing packets.")
+        print("Only TCP and UDP packets are captured.")
         while True:
-            print("\033c", end="") # Clear the screen
-            print(f"Capturing packets on {network_interface}")
-            print(f"Machine learning model `{model_name}` has predicted the following flows as Malicious")
-            print(display)
-            print("Press Ctrl-C to terminate capturing packets.")
-            print("Only TCP and UDP packets are captured.")
-
             # Capture packet
             (header, buf) = capture.next()
             packet_count += 1
@@ -192,7 +191,12 @@ def capture_packets(network_interface, model_name):
 
     except KeyboardInterrupt:
         # Ctrl-C (EOF) was pressed
-        print("Terminating...")
+        print("\033c", end="") # Clear the screen
+        q_or_any = input("Press q to quit or any other key to restart capturing")
+        if (q_or_any == 'q'):
+            print(f"Generating report to 'flow_based/src/reports/{report_file_name}' and terminating...")
+        else:
+            capture_packets(network_interface, model_name)
 
     # Calculate packet capture rate
     elapsed_time = time.time() - start_time
@@ -355,7 +359,7 @@ def analyze_flow(flow_name, model_name):
     with redirect_stdout(null_output), redirect_stderr(null_output):
         loaded_model = joblib.load(f"flow_based/src/final_models/{model_name}.pkl")
         is_attack = loaded_model.predict(flow_df)   
-        
+
     # loaded_model = joblib.load(f"flow_based/src/final_models/{model_name}.pkl")
     # is_attack = loaded_model.predict(flow_df)  
 
