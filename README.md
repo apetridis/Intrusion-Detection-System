@@ -133,10 +133,7 @@ pip install -r detection_requirements.txt
 ```
 ### Run tool
 The tool needs sudo rights, so the best thing to do is to install the requirements on the virtual enviroment and then run the script right from the virtual enviroment python interpreter.
-- Change directory
-```
-cd flow_based/src/
-```
+
 - Run tool and select the model name from one of the models that you train on the previous section. 
 ```
 sudo virtualenv/bin/python3 main.py -m `model_name`
