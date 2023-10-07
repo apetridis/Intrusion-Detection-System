@@ -127,9 +127,15 @@ def capture_packets(network_interface, model_name):
     capture = pcapy.open_live(network_interface, snaplen, promiscuous, timeout)
 
     # Capture packets
-    
     try:
         while True:
+            print("\033c", end="") # Clear the screen
+            print(f"Capturing packets on {network_interface}")
+            print(f"Machine learning model `{model_name}` has predicted the following flows as Malicious")
+            print(display)
+            print("Press Ctrl-C to terminate capturing packets.")
+            print("Only TCP and UDP packets are captured.")
+
             # Capture packet
             (header, buf) = capture.next()
             packet_count += 1
@@ -345,8 +351,13 @@ def analyze_flow(flow_name, model_name):
 
     flow_df = uniFlow2df(uniflow)  
 
-    loaded_model = joblib.load(f"flow_based/src/final_models/{model_name}.pkl")
-    is_attack = loaded_model.predict(flow_df)  
+    null_output = io.StringIO()
+    with redirect_stdout(null_output), redirect_stderr(null_output):
+        loaded_model = joblib.load(f"flow_based/src/final_models/{model_name}.pkl")
+        is_attack = loaded_model.predict(flow_df)   
+        
+    # loaded_model = joblib.load(f"flow_based/src/final_models/{model_name}.pkl")
+    # is_attack = loaded_model.predict(flow_df)  
 
     return is_attack
 
