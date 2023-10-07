@@ -136,7 +136,7 @@ The tool needs sudo rights, so the best thing to do is to install the requiremen
 
 - Run tool and select the model name from one of the models that you train on the previous section. 
 ```
-sudo virtualenv/bin/python3 main.py -m `model_name`
+sudo virtualenv/bin/python3 flow_based/src/main.py -m `model_name`
 ```
 
 
