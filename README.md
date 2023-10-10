@@ -22,7 +22,7 @@ On a linux-based machine you can replicate the training and detection doing the 
 
 ### Install dependencies that are usefull for the python libraries
 ```
-sudo apt-get install libpcap-dev
+sudo apt-get install python3-dev libpcap-dev g++
 ```
 ### Create virtual enviroment
 ```
