@@ -22,7 +22,7 @@ On a linux-based machine you can replicate the training and detection doing the 
 
 ### Install dependencies that are usefull for the python libraries
 ```
-sudo apt-get install libpcap-dev
+sudo apt-get install python3-dev libpcap-dev g++
 ```
 ### Create virtual enviroment
 ```
@@ -138,5 +138,16 @@ The tool needs sudo rights, so the best thing to do is to install the requiremen
 ```
 sudo virtualenv/bin/python3 flow_based/src/main.py -m `model_name`
 ```
+Model name can be one of the following:
+- Supervised algorithms:
+  - K-nearest neighbors: ```knn```
+  - Random Forest: ```forest```
+  - Linear Support Vector Machine: ```linear_svm```
+  - Decision Trees: ```trees```
+- Unsupervised algorithms:
+  - Angle-Based Outlier Detection: ```abod```
+  - Isolation Forest: ```iforest```
+  - One Class Support Vector Machine: ```oneclass_svm```
+  - K-means: ```k_means```
 
 
