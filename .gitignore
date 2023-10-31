@@ -10,4 +10,5 @@ flow_based/data/unsupervised/selected_features/outputs
 plots.ipynb
 flow_based/src/reports
 flow_based/src/__pycache__
+flow_based/data/__pycache__
 generated_output.csv
