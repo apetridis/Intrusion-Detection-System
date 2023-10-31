@@ -297,11 +297,11 @@ def analyze_flow(flow_name, model_name):
             1: is an attack
     """
 
-    secure_ips = ['192.168.1.22', '192.168.1.138', '192.168.1.200', '192.168.27.65', '192.168.27.66'] # Broker, phone, linuxpc, vpn-phone, vpn-linuxpc
+    # secure_ips = ['192.168.1.22', '192.168.1.138', '192.168.1.200', '192.168.27.65', '192.168.27.66'] # Broker, phone, linuxpc, vpn-phone, vpn-linuxpc
 
-    parts = flow_name.split('_')
-    if parts[0] in secure_ips and parts[1] in secure_ips:
-        return 0
+    # parts = flow_name.split('_')
+    # if parts[0] in secure_ips and parts[1] in secure_ips:
+    #     return 0
     
     
     num_pkts = len(active_flows[flow_name])
