@@ -80,31 +80,31 @@ Use the following commands after the redirection to the specific folders to trai
 #### Supervised
   - Linear model
     ```
-    python3 train-model.py -c linear > outputs/linear-output.txt
+    python3 train-model.py -c linear 
     ```
   - K-Nearest Neighbour
     ```
-    python3 train-model.py -c knn > outputs/knn-output.txt
+    python3 train-model.py -c knn 
     ```
   - Support Vector Machine with RBF kerner
     ```
-    python3 train-model.py -c rbf_svm > outputs/rbf_svm-output.txt
+    python3 train-model.py -c rbf_svm 
     ```
   - Gaussiane Nayes Bayes
     ```
-    python3 train-model.py -c bayes > outputs/bayes-output.txt
+    python3 train-model.py -c bayes 
     ```
   - Decision Tree
     ```
-    python3 train-model.py -c trees > outputs/trees-output.txt
+    python3 train-model.py -c trees 
     ```
   - Random Forest
     ```
-    python3 train-model.py -c forest > outputs/forest-output.txt
+    python3 train-model.py -c forest 
     ```
   - Support Vector Machine with linear kernel
     ```
-    python3 train-model.py -c linear_svm > outputs/linear_svm-output.txt
+    python3 train-model.py -c linear_svm 
     ```
 #### Unsupervised
   - Isolation Forest
