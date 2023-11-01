@@ -109,19 +109,19 @@ Use the following commands after the redirection to the specific folders to trai
 #### Unsupervised
   - Isolation Forest
     ```
-    python3 train-model.py -c iforest > outputs/iforest.txt
+    python3 train-model.py -c iforest 
     ```
   - One Class Support Vector Machine
     ```
-    python3 train-model.py -c oneclass_svm > outputs/oneclass_svm.txt
+    python3 train-model.py -c oneclass_svm 
     ```
   - K-Means
     ```
-    python3 train-model.py -c k_means > outputs/k_means.txt
+    python3 train-model.py -c k_means 
     ```
   - Angle-Based OD
     ```
-    python3 train-model.py -c abod > outputs/abod.txt
+    python3 train-model.py -c abod 
     ```
 
 
