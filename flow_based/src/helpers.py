@@ -311,19 +311,15 @@ def analyze_flow(flow_name, model_name):
         length_list = []
         rst_list = []
         psh_list = []
-        # urg_list = []
-        # active_flow[flow_name][i] ==> ((rst_flag, psh_flag, fin_flag), timestamp, ip_len) 
         for i in range(len(active_flows[flow_name])): 
             time_list.append(time_tuple_to_float(active_flows[flow_name][i][1]))
             length_list.append(active_flows[flow_name][i][2])
             rst_list.append(active_flows[flow_name][i][0][0])
             psh_list.append(active_flows[flow_name][i][0][1])
-            # urg_list.append(active_flows[flow_name][i][0][2])
 
         time_list.sort(reverse = True) # put times in descending order
         t_diff = abs(np.diff(time_list)) # find the time differences
 
-        # mean_iat = sum(t_diff) / (num_pkts - 1)
         std_iat = np.std(t_diff) # std dev of IAT
         min_iat = min(t_diff)
         max_iat = max(t_diff)
@@ -333,7 +329,6 @@ def analyze_flow(flow_name, model_name):
 
         num_rst_flags = sum(rst_list)
         num_psh_flags = sum(psh_list)
-        # num_urg_flags = sum(urg_list)
 
         pkt_len_array = np.array(length_list)
         std_pkt_len = float(np.std(pkt_len_array))
@@ -341,7 +336,6 @@ def analyze_flow(flow_name, model_name):
         max_pkt_len = float(max(pkt_len_array))
 
     else:
-        # mean_iat = 0.0
         std_iat = 0.0
         min_iat = 0.0
         max_iat = 0.0
@@ -351,7 +345,6 @@ def analyze_flow(flow_name, model_name):
 
         num_psh_flags = active_flows[flow_name][0][0][0]
         num_rst_flags = active_flows[flow_name][0][0][1]
-        # num_urg_flags = active_flows[flow_name][0][0][2]
 
         std_pkt_len = 0.0
         min_pkt_len = active_flows[flow_name][0][2]
@@ -367,9 +360,6 @@ def analyze_flow(flow_name, model_name):
     with redirect_stdout(null_output), redirect_stderr(null_output):
         loaded_model = joblib.load(f"flow_based/src/final_models/{model_name}.pkl")
         is_attack = loaded_model.predict(flow_df)   
-
-    # loaded_model = joblib.load(f"flow_based/src/final_models/{model_name}.pkl")
-    # is_attack = loaded_model.predict(flow_df)  
 
     return is_attack
 
